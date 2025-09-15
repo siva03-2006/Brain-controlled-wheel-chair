@@ -1,0 +1,54 @@
+Description:
+This project involves the development of a wheelchair controlled by brain signals (EEG – Electroencephalogram), intended to assist paralyzed or severely disabled individuals who cannot use traditional control systems (joystick, voice, or buttons).
+The user wears an EEG headset (such as NeuroSky MindWave) that reads brainwave signals and sends data wirelessly (usually via Bluetooth) to a microcontroller (e.g., Arduino). Based on the interpretation of specific brainwave patterns (like attention or eye blink), the wheelchair moves in different directions.
+#include <SoftwareSerial.h>
+
+SoftwareSerial BT(10, 11); // RX, TX for Bluetooth (EEG)
+
+int ENA = 5;
+int ENB = 6;
+int IN1 = 7;
+int IN2 = 8;
+int IN3 = 9;
+int IN4 = 10;
+
+void setup() {
+  Serial.begin(9600);
+  BT.begin(9600);
+
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+}
+
+void loop() {
+  if (BT.available()) {
+    int attention = BT.read();  // Assuming EEG headset sends attention values
+
+    if (attention > 60) {
+      moveForward();
+    } else if (attention < 30) {
+      stopMotors();
+    }
+    // Add blink or other command cases here
+  }
+}
+
+void moveForward() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENA, 150);
+  analogWrite(ENB, 150);
+}
+
+void stopMotors() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+}
